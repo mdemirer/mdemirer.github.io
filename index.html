@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mustafa Demirer</title>
+<meta name="description" content="Mustafa Demirer — PhD candidate in high-energy astrophysics at Sabancı University. Magnetar bursts, Fermi GBM, X-ray timing of black-hole binaries.">
+<meta property="og:title" content="Mustafa Demirer">
+<meta property="og:description" content="PhD candidate in high-energy astrophysics, Sabancı University">
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href="https://mdemirer.github.io/">
+<meta property="og:url" content="https://mdemirer.github.io/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 26H9V20H12V5H15V13H18V19H21V24H30' fill='none' stroke='%231F77B4' stroke-width='2.5'/%3E%3C/svg%3E">
+<!--
+  Bu sayfa bilerek service worker KULLANMIYOR.
+  Aynı github.io adresindeki SUlaşım gibi uygulamaların kendi
+  service worker'larıyla çakışmasın diye buraya eklemeyin.
+-->
+<style>
+@font-face{font-family:"Spectral";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/spectral-latin-400.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Spectral";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/spectral-latin-ext-400.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Spectral";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/spectral-latin-600.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Spectral";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/spectral-latin-ext-600.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+
+:root{
+  --bg:#F6F8FB;
+  --ink:#17212F;
+  --muted:#5A6577;
+  --rule:#D8DEE6;
+  --curve:#1F77B4;      /* matplotlib'in varsayılan mavisi */
+  --link:#1A6699;
+  --serif:"Spectral",Georgia,"Times New Roman",serif;
+  --ui:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#111821;
+    --ink:#E4E9F0;
+    --muted:#98A3B3;
+    --rule:#283342;
+    --curve:#5DA5DA;
+    --link:#83BDE6;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:400 1.125rem/1.62 var(--serif);
+  font-variant-numeric:oldstyle-nums proportional-nums;
+}
+.page{max-width:44rem;margin:0 auto;padding:1.25rem 16px 4rem}
+a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:.18em}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--curve);outline-offset:3px;border-radius:2px}
+
+.topbar{display:flex;justify-content:flex-end}
+.lang{
+  font:500 .875rem/1 var(--ui);color:var(--muted);background:none;
+  border:1px solid var(--rule);border-radius:999px;padding:.45rem .8rem;cursor:pointer;
+}
+.lang:hover{color:var(--ink);border-color:var(--muted)}
+
+header{padding-top:2.5rem}
+h1{font-weight:600;font-size:clamp(2.2rem,7vw,3.1rem);line-height:1.05;letter-spacing:-.01em;margin:0}
+.role{margin:.6rem 0 0;color:var(--muted);font-size:1.15rem;line-height:1.4}
+
+.curve{display:block;width:100%;height:auto;margin:2.25rem 0 1.5rem;overflow:hidden}
+.curve path{fill:none;stroke:var(--curve);stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-linejoin:miter}
+.curve line{stroke:var(--rule);stroke-width:1;vector-effect:non-scaling-stroke}
+/* Açılışta eğri soldan sağa, zaman ekseni boyunca bir kez çizilir */
+.curve .cover{display:none;fill:var(--bg)}
+@media (prefers-reduced-motion:no-preference){
+  .curve .cover{display:block;animation:uncover 2.6s cubic-bezier(.4,0,.25,1) .15s forwards}
+  @keyframes uncover{to{transform:translateX(800px)}}
+}
+
+.links{display:flex;flex-wrap:wrap;gap:.35rem 1.4rem;margin:0;padding:0;list-style:none;font-size:1rem}
+
+section{margin-top:3.25rem}
+h2{font-weight:600;font-size:1.3rem;line-height:1.3;margin:0 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--rule)}
+p{margin:0 0 1rem;max-width:36em}
+
+.topics{margin:0}
+.topics dt{font-weight:600}
+.topics dd{margin:0 0 1rem;color:var(--muted)}
+
+/* Ortak liste öğeleri */
+.title{font-weight:600;line-height:1.35}
+.sub{font-size:1rem;color:var(--muted);margin-top:.15rem}
+.sub b{color:var(--ink);font-weight:600}
+.desc{font-size:1rem;margin:.25rem 0 0;max-width:none}
+.note{font-size:1rem;color:var(--muted)}
+
+/* Yıl sütunlu listeler: yayınlar, konuşmalar */
+.dated{list-style:none;margin:0;padding:0}
+.dated li{display:grid;grid-template-columns:3.5rem 1fr;gap:0 1rem;margin-bottom:1.4rem}
+.dated .year{color:var(--muted);font-variant-numeric:lining-nums tabular-nums;padding-top:.05rem}
+.venue{font-size:1rem;margin-top:.1rem}
+.venue a{margin-left:.9rem}
+
+/* Tarihi sağda duran listeler: eğitim, öğretim, burslar, projeler */
+.plain{list-style:none;margin:0;padding:0}
+.plain li{margin-bottom:1.4rem}
+.plain .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 1.25rem}
+.plain .when{font-size:1rem;color:var(--muted);white-space:nowrap;font-variant-numeric:lining-nums tabular-nums}
+
+footer{margin-top:4rem;padding-top:1rem;border-top:1px solid var(--rule);font-size:.95rem;color:var(--muted)}
+footer p{margin:0 0 .3rem}
+
+@media (max-width:30rem){
+  body{font-size:1.0625rem}
+  .dated li{grid-template-columns:1fr}
+  .dated .year{padding:0}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topbar"><button class="lang" id="lang" type="button"></button></div>
+
+  <header>
+    <h1 id="name"></h1>
+    <p class="role" id="role"></p>
+    <svg class="curve" viewBox="0 0 800 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <line x1="0" y1="119" x2="800" y2="119"/>
+      <path d="M0 102.3V102.3H4.0V101.6H8.0V96.1H12.0V97.8H16.0V103.3H20.0V91.6H24.0V99.9H28.0V98.4H32.0V99.1H36.0V99.6H40.0V98.5H44.0V102.9H48.0V93.9H52.0V103.2H56.0V91.7H60.0V97.9H64.0V103.8H68.0V98.6H72.0V98.0H76.0V94.1H80.0V93.2H84.0V99.0H88.0V94.6H92.0V96.5H96.0V98.7H100.0V108.2H104.0V96.2H108.0V99.0H112.0V98.8H116.0V101.3H120.0V95.7H124.0V100.2H128.0V106.3H132.0V100.8H136.0V99.5H140.0V94.4H144.0V103.3H148.0V102.5H152.0V97.8H156.0V100.8H160.0V96.7H164.0V97.3H168.0V100.5H172.0V94.6H176.0V99.8H180.0V102.7H184.0V101.8H188.0V100.0H192.0V93.6H196.0V92.4H200.0V99.0H204.0V104.5H208.0V93.7H212.0V100.6H216.0V100.0H220.0V96.8H224.0V97.2H228.0V99.1H232.0V99.7H236.0V94.6H240.0V100.3H244.0V100.2H248.0V95.0H252.0V103.7H256.0V103.6H260.0V101.2H264.0V96.2H268.0V93.3H272.0V98.0H276.0V100.2H280.0V96.6H284.0V93.6H288.0V105.1H292.0V95.3H296.0V102.4H300.0V96.5H304.0V95.9H308.0V97.9H312.0V99.9H316.0V97.0H320.0V101.2H324.0V98.8H328.0V102.0H332.0V101.1H336.0V99.4H340.0V99.1H344.0V106.2H348.0V97.7H352.0V99.9H356.0V103.7H360.0V98.2H364.0V102.4H368.0V93.0H372.0V35.4H376.0V8.0H380.0V19.0H384.0V65.2H388.0V62.1H392.0V77.0H396.0V75.7H400.0V70.9H404.0V20.4H408.0V61.8H412.0V76.0H416.0V73.3H420.0V89.2H424.0V98.1H428.0V90.1H432.0V77.2H436.0V63.0H440.0V81.0H444.0V82.5H448.0V86.2H452.0V80.7H456.0V84.0H460.0V91.5H464.0V94.6H468.0V102.1H472.0V93.2H476.0V98.4H480.0V98.8H484.0V99.2H488.0V92.5H492.0V96.3H496.0V99.0H500.0V89.9H504.0V95.7H508.0V102.4H512.0V98.5H516.0V102.2H520.0V94.4H524.0V102.5H528.0V99.9H532.0V104.4H536.0V97.2H540.0V93.7H544.0V96.3H548.0V99.2H552.0V100.1H556.0V95.4H560.0V100.2H564.0V100.3H568.0V95.4H572.0V103.4H576.0V97.9H580.0V96.9H584.0V99.5H588.0V104.0H592.0V98.8H596.0V95.2H600.0V98.9H604.0V100.5H608.0V100.4H612.0V96.3H616.0V96.9H620.0V95.4H624.0V94.2H628.0V102.1H632.0V97.0H636.0V101.4H640.0V98.0H644.0V95.6H648.0V103.4H652.0V99.2H656.0V105.9H660.0V94.0H664.0V98.3H668.0V99.4H672.0V100.8H676.0V97.8H680.0V93.1H684.0V97.6H688.0V98.3H692.0V101.4H696.0V101.5H700.0V97.4H704.0V100.1H708.0V100.0H712.0V96.2H716.0V101.3H720.0V101.3H724.0V93.0H728.0V98.0H732.0V95.0H736.0V103.6H740.0V101.0H744.0V93.2H748.0V101.2H752.0V95.6H756.0V105.4H760.0V103.7H764.0V98.0H768.0V94.6H772.0V100.8H776.0V102.1H780.0V101.0H784.0V100.2H788.0V98.2H792.0V102.6H796.0V98.5H800.0"/>
+      <rect class="cover" x="0" y="-4" width="800" height="128"/>
+    </svg>
+    <ul class="links" id="links"></ul>
+  </header>
+
+  <main>
+    <section aria-labelledby="h-about">
+      <h2 id="h-about"></h2>
+      <div id="about"></div>
+    </section>
+
+    <section aria-labelledby="h-education">
+      <h2 id="h-education"></h2>
+      <ul class="plain" id="education"></ul>
+    </section>
+
+    <section aria-labelledby="h-research">
+      <h2 id="h-research"></h2>
+      <dl class="topics" id="research"></dl>
+    </section>
+
+    <section aria-labelledby="h-pubs">
+      <h2 id="h-pubs"></h2>
+      <ol class="dated" id="pubs" reversed></ol>
+      <p class="note" id="pubs-note"></p>
+    </section>
+
+    <section aria-labelledby="h-talks">
+      <h2 id="h-talks"></h2>
+      <ul class="dated" id="talks"></ul>
+    </section>
+
+    <section aria-labelledby="h-teaching">
+      <h2 id="h-teaching"></h2>
+      <ul class="plain" id="teaching"></ul>
+    </section>
+
+    <section aria-labelledby="h-projects">
+      <h2 id="h-projects"></h2>
+      <ul class="plain" id="projects"></ul>
+    </section>
+
+    <section aria-labelledby="h-funding">
+      <h2 id="h-funding"></h2>
+      <ul class="plain" id="funding"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p id="updated"></p>
+    <p id="privacy"></p>
+  </footer>
+</div>
+
+<noscript><p style="max-width:44rem;margin:0 auto;padding:0 16px">Mustafa Demirer — PhD candidate, Sabancı University. ORCID <a href="https://orcid.org/0009-0000-9126-7824">0009-0000-9126-7824</a>.</p></noscript>
+
+<script>
+/* =====================================================================
+   DÜZENLEME ALANI — sayfadaki bütün içerik buradan gelir.
+   { tr: "...", en: "..." } olan yerler iki dilde yazılır; düz metin
+   olanlar iki dilde de aynı görünür. url'si boş ("") bırakılan bağlantı
+   sayfada hiç gösterilmez. Bir bölümün listesini boş bırakırsan ([])
+   o bölüm sayfadan kalkar.
+   ===================================================================== */
+const SITE = {
+  name: "Mustafa Demirer",
+  role: {
+    en: "PhD candidate in high-energy astrophysics, Sabancı University, Istanbul",
+    tr: "Yüksek enerji astrofiziği doktora adayı, Sabancı Üniversitesi, İstanbul"
+  },
+
+  // E-posta iki parça halinde: sayfanın kaynağında düz adres olarak
+  // durmasın, spam toplayan botlar kolayca bulamasın diye.
+  email: ["mustafa.demirer", "sabanciuniv.edu"],
+
+  links: [
+    { label: { en: "Email", tr: "E-posta" }, url: "mailto" },
+    { label: "ORCID", url: "https://orcid.org/0009-0000-9126-7824" },
+    { label: "NASA ADS", url: "https://ui.adsabs.harvard.edu/search/q=author%3A%22Demirer%2C%20Mustafa%22&sort=date%20desc" },
+    { label: "LinkedIn", url: "https://www.linkedin.com/in/mdemirer" },
+    { label: "GitHub", url: "https://github.com/mdemirer" }
+  ],
+
+  about: {
+    en: [
+      "I am a PhD candidate in high-energy astrophysics at Sabancı University. I study the short, energetic bursts of magnetars — neutron stars with the strongest magnetic fields known — mainly with data from the Gamma-ray Burst Monitor on board the Fermi Gamma-ray Space Telescope.",
+      "I also work on black-hole X-ray binaries, using variability time scales and reverberation lags in NICER data to follow how the inner accretion flow changes.",
+      "Before physics I studied electronics and communication engineering at Istanbul Technical University."
+    ],
+    tr: [
+      "Sabancı Üniversitesi'nde yüksek enerji astrofiziği alanında doktora yapıyorum. Bilinen en güçlü manyetik alanlara sahip nötron yıldızları olan magnetarların kısa ve enerjik patlamalarını, çoğunlukla Fermi Gama Işını Uzay Teleskobu'ndaki Gama Işını Patlaması İzleyicisi (GBM) verileriyle inceliyorum.",
+      "Bunun yanında kara delikli X-ışını çiftleri üzerine çalışıyorum: NICER verilerindeki değişkenlik zaman ölçeklerinden ve yankılanma gecikmelerinden yararlanarak iç toplanma akışının nasıl değiştiğini izliyorum.",
+      "Fiziğe geçmeden önce İstanbul Teknik Üniversitesi'nde elektronik ve haberleşme mühendisliği okudum."
+    ]
+  },
+
+  education: [
+    {
+      title: { en: "PhD in Physics", tr: "Fizik doktorası" },
+      place: { en: "Sabancı University, Faculty of Engineering and Natural Sciences",
+               tr: "Sabancı Üniversitesi, Mühendislik ve Doğa Bilimleri Fakültesi" },
+      when:  { en: "2024 – 2028 (expected)", tr: "2024 – 2028 (beklenen)" }
+    },
+    {
+      title: { en: "MSc in Physics", tr: "Fizik yüksek lisansı" },
+      place: { en: "Sabancı University, Faculty of Engineering and Natural Sciences",
+               tr: "Sabancı Üniversitesi, Mühendislik ve Doğa Bilimleri Fakültesi" },
+      when:  "2022 – 2024",
+      text:  { en: "Thesis project: Time-Resolved Spectral Analysis of Magnetars. Supervisor: Prof. Ersin Göğüş.",
+               tr: "Tez projesi: magnetarların zamana bağlı tayf analizi. Danışman: Prof. Dr. Ersin Göğüş." }
+    },
+    {
+      title: { en: "BSc in Electronics and Communication Engineering", tr: "Elektronik ve haberleşme mühendisliği lisansı" },
+      place: { en: "Istanbul Technical University, Faculty of Electrical and Electronics Engineering",
+               tr: "İstanbul Teknik Üniversitesi, Elektrik-Elektronik Fakültesi" },
+      when:  "2016 – 2022",
+      text:  { en: "Graduation project: A Search for Pulses from an Elusive Neutron Star in Supernova Remnant 1987A. Co-supervisors: Prof. Kazım Yavuz Ekşi, Dr. Sinem Şaşmaz.",
+               tr: "Bitirme projesi: SN 1987A süpernova kalıntısında saklı bir nötron yıldızından atım araması. Ortak danışmanlar: Prof. Dr. Kazım Yavuz Ekşi, Dr. Sinem Şaşmaz." }
+    }
+  ],
+
+  research: [
+    {
+      title: { en: "Magnetar bursts", tr: "Magnetar patlamaları" },
+      text: {
+        en: "Time-resolved spectroscopy of short bursts and a 17-year catalog of magnetar bursts seen by Fermi GBM.",
+        tr: "Kısa patlamaların zamana bağlı tayf analizi ve Fermi GBM'in 17 yılda gördüğü magnetar patlamalarının kataloğu."
+      }
+    },
+    {
+      title: { en: "Quasi-periodic oscillations", tr: "Yarı periyodik salınımlar" },
+      text: {
+        en: "Searching burst light curves and hardness ratios for quasi-periodic signals with Gaussian-process methods.",
+        tr: "Patlama ışık eğrilerinde ve sertlik oranlarında Gauss süreci yöntemleriyle yarı periyodik sinyal arama."
+      }
+    },
+    {
+      title: { en: "Black-hole X-ray binaries", tr: "Kara delikli X-ışını çiftleri" },
+      text: {
+        en: "Minimal variability time scales and reverberation lags in NICER data, modeled with relativistic reflection, to trace how the accretion geometry evolves.",
+        tr: "NICER verilerinde en kısa değişkenlik zaman ölçekleri ve yankılanma gecikmeleri; göreli yansıma modelleriyle toplanma geometrisinin nasıl değiştiğini izleme."
+      }
+    }
+  ],
+
+  // Yeni yayını listenin EN ÜSTÜNE ekle. Yazar listesinde kendi adını
+  // ** ** arasına yaz, kalın görünür.
+  publications: [
+    {
+      year: 2026,
+      title: "17 yr of Magnetar Bursts Observed with the Fermi Gamma-Ray Burst Monitor",
+      authors: "Godwin, M., Keskin, Ö., **Demirer, M.**, Yi, Y.-J., Lin, L., Roberts, O. J., Göğüş, E., Kaneko, Y., Briggs, M., Baring, M. G., et al.",
+      venue: "ApJS, 286",
+      doi: "10.3847/1538-4365/ae9904",
+      arxiv: "2609.02809"
+    },
+    {
+      year: 2025,
+      title: "Detailed Time-resolved Spectral and Temporal Investigations of SGR J1550−5418 Bursts Detected with Fermi Gamma-Ray Burst Monitor",
+      authors: "**Demirer, M.**, Göğüş, E., Kaneko, Y., Keskin, Ö., Şaşmaz, S., Yamasaki, S.",
+      venue: "ApJ, 988, 282",
+      doi: "10.3847/1538-4357/ade237",
+      arxiv: "2506.04414"
+    },
+    {
+      year: 2024,
+      title: "Concise Spectrotemporal Studies of Magnetar SGR J1935+2154 Bursts",
+      authors: "Keskin, Ö., Göğüş, E., Kaneko, Y., **Demirer, M.**, Yamasaki, S., Baring, M. G., Lin, L., Roberts, O. J., Kouveliotou, C.",
+      venue: "ApJ, 965, 130",
+      doi: "10.3847/1538-4357/ad2fce",
+      arxiv: "2402.18151"
+    }
+  ],
+
+  // kind: "talk" ya da "poster". Yeni olanı EN ÜSTE ekle.
+  talks: [
+    {
+      year: 2026, kind: "talk",
+      title: "17 Years of Magnetar Bursts Observed with the Fermi Gamma-ray Burst Monitor",
+      event: { en: "4th Beyazıt High Energy Meeting, Istanbul University", tr: "4. Beyazıt Yüksek Enerji Toplantısı, İstanbul Üniversitesi" }
+    },
+    {
+      year: 2026, kind: "poster",
+      title: "Probing the Evolution of Accretion Geometry in Black Hole X-ray Binaries via Minimal Time Scales and Reverberation Lags",
+      event: { en: "European Astronomical Society Annual Meeting, Lausanne, Switzerland", tr: "Avrupa Astronomi Derneği (EAS) Yıllık Toplantısı, Lozan, İsviçre" }
+    },
+    {
+      year: 2025, kind: "talk",
+      title: "A Search for Quasi-Periodic Spectral Oscillations in SGR J1550−5418 with Fermi/GBM",
+      event: { en: "3rd Beyazıt High Energy Meeting, Istanbul University", tr: "3. Beyazıt Yüksek Enerji Toplantısı, İstanbul Üniversitesi" }
+    },
+    {
+      year: 2025, kind: "poster",
+      title: "Detailed Spectrotemporal Investigations of SGR J1550−5418 Bursts Detected with Fermi-GBM",
+      event: { en: "European Astronomical Society Annual Meeting, Cork, Ireland", tr: "Avrupa Astronomi Derneği (EAS) Yıllık Toplantısı, Cork, İrlanda" }
+    },
+    {
+      year: 2024, kind: "talk",
+      title: "Time-Resolved Spectral Analysis of Bursts from SGR J1550−5418 Detected by Fermi/GBM",
+      event: { en: "23rd National Astronomy Conference, Türkiye", tr: "23. Ulusal Astronomi Kongresi" }
+    },
+    {
+      year: 2024, kind: "talk",
+      title: "Spectrotemporal Studies of Magnetars SGR J1935+2154 and SGR J1550−5418 with Fermi/GBM",
+      event: { en: "2nd Beyazıt High Energy Meeting, Istanbul University", tr: "2. Beyazıt Yüksek Enerji Toplantısı, İstanbul Üniversitesi" }
+    }
+  ],
+
+  teaching: [
+    {
+      title: { en: "Teaching assistant, NS 101–102 Science of Nature", tr: "Asistan, NS 101–102 Science of Nature" },
+      place: { en: "Sabancı University", tr: "Sabancı Üniversitesi" },
+      when:  { en: "2022 – present", tr: "2022 – günümüz" },
+      text:  { en: "Master TA for these required first-year science courses, with full responsibility for a recitation section: coordinating other TAs and holding office hours.",
+               tr: "Birinci sınıflar için zorunlu bu temel bilim derslerinde baş asistan; bir uygulama şubesinin tüm sorumluluğu, diğer asistanların koordinasyonu ve ofis saatleri." }
+    },
+    {
+      title: { en: "Lecturer, Astrophysics and Exoplanets", tr: "Eğitmen, Astrofizik ve Ötegezegenler" },
+      place: { en: "Sabancı University High School Summer Program", tr: "Sabancı Üniversitesi Lise Yaz Programı" },
+      when:  "2024, 2025, 2026"
+    },
+    {
+      title: { en: "Instructor, science workshop for children", tr: "Eğitmen, çocuklar için bilim atölyesi" },
+      when:  "2023 – 2025",
+      text:  { en: "Experiments and simulations across a range of science topics, mostly for primary-school students.",
+               tr: "Çoğunlukla ilkokul öğrencileriyle çeşitli bilim konularında deneyler ve simülasyonlar." }
+    },
+    {
+      title: { en: "Chairman, later president of the supervisory board", tr: "Başkan, ardından denetim kurulu başkanı" },
+      place: { en: "ITU Astronomy Club", tr: "İTÜ Astronomi Kulübü" },
+      when:  "2018 – 2021",
+      text:  { en: "We developed the Astronomy 101 and 102 introductory courses for university students and organized ITU Astronomy Days and stargazing events.",
+               tr: "Üniversite öğrencilerine yönelik Astronomi 101 ve 102 giriş derslerini geliştirdik; İTÜ Gökbilim Günleri'ni ve gökyüzü gözlem etkinliklerini düzenledik." }
+    },
+    {
+      title: { en: "Telescope operator, TÜBİTAK Sky Observation Event", tr: "Teleskop operatörü, TÜBİTAK Gökyüzü Gözlem Etkinliği" },
+      place: { en: "TÜBİTAK National Observatory", tr: "TÜBİTAK Ulusal Gözlemevi" },
+      when:  "2019, 2021, 2023"
+    }
+  ],
+
+  projects: [
+    {
+      title: "SUlaşım",
+      url: "https://mdemirer.github.io/kampus-ulasim/",
+      text: {
+        en: "Next campus shuttle and İETT KM18 bus at Sabancı University. An installable web app that works on any phone.",
+        tr: "Sabancı Üniversitesi'nde sıradaki kampüs shuttle'ı ve İETT KM18 seferi. Her telefona kurulabilen bir web uygulaması."
+      },
+      place: {
+        en: "Independent project, not an official Sabancı University or İETT service.",
+        tr: "Bağımsız bir proje; Sabancı Üniversitesi'nin ya da İETT'nin resmi uygulaması değildir."
+      }
+    },
+    {
+      title: "Sonraki Tren",
+      url: "https://mdemirer.github.io/sonraki-tren/",
+      text: {
+        en: "Estimated train arrivals for İstanbul's metro and tram lines, built on Metro İstanbul timetables. Works offline.",
+        tr: "Metro İstanbul sefer saatlerine dayanarak İstanbul metro ve tramvay hatlarında tahmini tren geliş saatleri. Çevrimdışı çalışır."
+      },
+      place: {
+        en: "Independent project, not an official Metro İstanbul service.",
+        tr: "Bağımsız bir proje; Metro İstanbul'un resmi uygulaması değildir."
+      }
+    }
+  ],
+
+  funding: [
+    {
+      title: { en: "TÜBİTAK project scholarship", tr: "TÜBİTAK proje bursu" },
+      place: { en: "“Using NICER data to probe the characteristic time scales of X-ray emission regions in black hole binaries”, grant 123F258",
+               tr: "“Using NICER data to probe the characteristic time scales of X-ray emission regions in black hole binaries”, proje no 123F258" },
+      when:  "2025 – 2026"
+    },
+    {
+      title: { en: "PhD Dean’s Office Scholarship", tr: "Doktora Dekanlık Bursu" },
+      place: { en: "Faculty of Engineering and Natural Sciences, Sabancı University",
+               tr: "Sabancı Üniversitesi Mühendislik ve Doğa Bilimleri Fakültesi" },
+      when:  "2024 – 2028"
+    },
+    {
+      title: { en: "TÜBİTAK project scholarship", tr: "TÜBİTAK proje bursu" },
+      place: { en: "“High Time Resolution Investigations of Magnetar Bursts”, grant 121F266",
+               tr: "“High Time Resolution Investigations of Magnetar Bursts”, proje no 121F266" },
+      when:  "2022 – 2024"
+    },
+    {
+      title: { en: "Ministry of Youth and Sports “Top 100” Scholarship", tr: "Gençlik ve Spor Bakanlığı “İlk 100” Bursu" },
+      place: { en: "For ranking in the top 100 of the national university entrance exam",
+               tr: "Üniversite giriş sınavında ilk 100'e girenlere verilen burs" },
+      when:  "2016 – 2020"
+    }
+  ],
+
+  updated: { en: "Last updated October 2026", tr: "Son güncelleme: Ekim 2026" }
+};
+
+const UI = {
+  about:     { en: "About",                     tr: "Hakkımda" },
+  education: { en: "Education",                 tr: "Eğitim" },
+  research:  { en: "Research",                  tr: "Araştırma" },
+  pubs:      { en: "Publications",              tr: "Yayınlar" },
+  pubsNote:  { en: "The full list is on NASA ADS.", tr: "Tam liste NASA ADS'te." },
+  talks:     { en: "Talks and posters",         tr: "Konuşmalar ve posterler" },
+  talk:      { en: "Talk",                      tr: "Konuşma" },
+  poster:    { en: "Poster",                    tr: "Poster" },
+  teaching:  { en: "Teaching and outreach",     tr: "Öğretim ve bilim iletişimi" },
+  projects:  { en: "Projects",                  tr: "Projeler" },
+  funding:   { en: "Scholarships and funding",  tr: "Burslar ve destekler" },
+  privacy:   { en: "This page uses no cookies, analytics or third-party scripts.",
+               tr: "Bu sayfa çerez, ziyaretçi takibi ya da üçüncü taraf kodu kullanmaz." },
+  switchTo:  { en: "Türkçe",                    tr: "English" }
+};
+
+/* ---------------------- buradan sonrası çizim kodu ---------------------- */
+(function () {
+  const KEY = "md-home.lang";
+  let lang;
+  try { lang = localStorage.getItem(KEY); } catch (e) {}
+  if (lang !== "tr" && lang !== "en") {
+    lang = (navigator.language || "").toLowerCase().startsWith("tr") ? "tr" : "en";
+  }
+
+  const $ = (id) => document.getElementById(id);
+  const t = (v) => (v && typeof v === "object" && !Array.isArray(v)) ? v[lang] : v;
+  const el = (tag, attrs, ...kids) => {
+    const n = document.createElement(tag);
+    for (const k in (attrs || {})) n.setAttribute(k, attrs[k]);
+    for (const c of kids) if (c != null && c !== "") n.append(c);
+    return n;
+  };
+  const link = (href, text) => {
+    const a = el("a", { href }, text);
+    if (/^https?:/.test(href)) a.rel = "noopener";
+    return a;
+  };
+  // "**Ad**" -> <b>Ad</b>
+  const bolded = (s) => {
+    const f = document.createDocumentFragment();
+    s.split(/(\*\*[^*]+\*\*)/).forEach((p) => {
+      if (p.startsWith("**")) f.append(el("b", null, p.slice(2, -2)));
+      else if (p) f.append(p);
+    });
+    return f;
+  };
+  // Başlık + sağda tarih + alt satır + açıklama
+  const plainItem = (x) => el("li", null,
+    el("div", { class: "head" },
+      el("div", { class: "title" }, x.url ? link(x.url, t(x.title)) : t(x.title)),
+      x.when ? el("span", { class: "when" }, t(x.when)) : null),
+    x.place ? el("div", { class: "sub" }, t(x.place)) : null,
+    x.text ? el("p", { class: "desc" }, t(x.text)) : null);
+  // Sol sütunda yıl
+  const datedItem = (year, ...body) => el("li", null,
+    el("div", { class: "year" }, String(year)),
+    el("div", null, ...body));
+
+  function section(key, list, fill) {
+    const sec = $(key).closest("section");
+    sec.hidden = !list || list.length === 0;
+    $("h-" + key).textContent = t(UI[key]);
+    $(key).replaceChildren(...(list || []).map(fill));
+  }
+
+  function render() {
+    document.documentElement.lang = lang;
+    $("lang").textContent = UI.switchTo[lang];
+    $("lang").setAttribute("lang", lang === "tr" ? "en" : "tr");
+
+    $("name").textContent = SITE.name;
+    $("role").textContent = t(SITE.role);
+
+    const links = $("links"); links.replaceChildren();
+    for (const l of SITE.links) {
+      if (!l.url) continue;
+      const href = l.url === "mailto" ? "mailto:" + SITE.email.join("@") : l.url;
+      links.append(el("li", null, link(href, t(l.label))));
+    }
+
+    $("h-about").textContent = t(UI.about);
+    $("about").replaceChildren(...t(SITE.about).map((p) => el("p", null, p)));
+
+    section("education", SITE.education, plainItem);
+
+    $("h-research").textContent = t(UI.research);
+    $("research").replaceChildren(...SITE.research.flatMap((r) => [
+      el("dt", null, t(r.title)), el("dd", null, t(r.text))
+    ]));
+
+    $("h-pubs").textContent = t(UI.pubs);
+    $("pubs").replaceChildren(...SITE.publications.map((p) => {
+      const venue = el("div", { class: "venue" }, el("span", null, p.venue));
+      if (p.doi) venue.append(link("https://doi.org/" + p.doi, "DOI"));
+      if (p.arxiv) venue.append(link("https://arxiv.org/abs/" + p.arxiv, "arXiv"));
+      return datedItem(p.year,
+        el("div", { class: "title" }, p.title),
+        el("div", { class: "sub" }, bolded(p.authors)),
+        venue);
+    }));
+    const ads = SITE.links.find((l) => l.label === "NASA ADS");
+    $("pubs-note").replaceChildren();
+    if (ads && ads.url) {
+      const [before, after] = t(UI.pubsNote).split("NASA ADS");
+      $("pubs-note").append(before, link(ads.url, "NASA ADS"), after);
+    }
+
+    section("talks", SITE.talks, (x) => datedItem(x.year,
+      el("div", { class: "title" }, x.title),
+      el("div", { class: "sub" }, t(UI[x.kind]) + ", " + t(x.event))));
+
+    section("teaching", SITE.teaching, plainItem);
+    $("h-projects").textContent = t(UI.projects);
+    $("projects").replaceChildren(...SITE.projects.map((x) =>
+      plainItem({ title: x.title, url: x.url, text: x.text, place: x.place })));
+    // Projelerde "resmi değildir" notu açıklamanın altında dursun
+    $("projects").querySelectorAll("li").forEach((li) => {
+      const sub = li.querySelector(".sub"), desc = li.querySelector(".desc");
+      if (sub && desc) li.append(sub);
+    });
+    section("funding", SITE.funding, plainItem);
+
+    $("updated").textContent = t(SITE.updated);
+    $("privacy").textContent = t(UI.privacy);
+    document.title = SITE.name;
+  }
+
+  $("lang").addEventListener("click", () => {
+    lang = lang === "tr" ? "en" : "tr";
+    try { localStorage.setItem(KEY, lang); } catch (e) {}
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
